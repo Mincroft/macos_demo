@@ -1,0 +1,271 @@
+//
+//  Mouse_and_Keyboard.swift
+//  macOS_agent_demo
+//
+//  Created by 殷瑜 on 2024/8/28.
+//
+
+import Quartz
+
+struct EventMasks {
+    static let keyDownMask = 1 << CGEventType.keyDown.rawValue
+    static let keyUpMask = 1 << CGEventType.keyUp.rawValue
+    static let leftMouseDownMask = 1 << CGEventType.leftMouseDown.rawValue
+    static let leftMouseUpMask = 1 << CGEventType.leftMouseUp.rawValue
+    static let rightMouseDownMask = 1 << CGEventType.rightMouseDown.rawValue
+    static let rightMouseUpMask = 1 << CGEventType.rightMouseUp.rawValue
+    static let mouseMovedMask = 1 << CGEventType.mouseMoved.rawValue
+    static let leftMouseDraggedMask = 1 << CGEventType.leftMouseDragged.rawValue
+    static let rightMouseDraggedMask = 1 << CGEventType.rightMouseDragged.rawValue
+    static let scrollWheelMask = 1 << CGEventType.scrollWheel.rawValue
+    static let flagChangedMask = 1 << CGEventType.flagsChanged.rawValue
+
+    static let allEventsMask: CGEventMask = {
+        return CGEventMask(keyDownMask) |
+               CGEventMask(keyUpMask) |
+               CGEventMask(leftMouseDownMask) |
+               CGEventMask(leftMouseUpMask) |
+               CGEventMask(rightMouseDownMask) |
+               CGEventMask(rightMouseUpMask) |
+               CGEventMask(mouseMovedMask) |
+               CGEventMask(leftMouseDraggedMask) |
+               CGEventMask(rightMouseDraggedMask) |
+               CGEventMask(scrollWheelMask) |
+               CGEventMask(flagChangedMask)
+        
+    }()
+    // 定义一个字典，将 CGEventType 的原始值映射到相应的操作名
+    static let eventTypeNames: [CGEventType: String] = [
+        .keyDown: "Key Down",
+        .keyUp: "Key Up",
+        .flagsChanged: "Flags Changed",
+        .leftMouseDown: "Left Mouse Down",
+        .leftMouseUp: "Left Mouse Up",
+        .rightMouseDown: "Right Mouse Down",
+        .rightMouseUp: "Right Mouse Up",
+        .mouseMoved: "Mouse Moved",
+        .leftMouseDragged: "Left Mouse Dragged",
+        .rightMouseDragged: "Right Mouse Dragged",
+        .scrollWheel: "Scroll Wheel",
+        .tabletPointer: "Tablet Pointer",
+        .tabletProximity: "Tablet Proximity",
+        .otherMouseDown: "Other Mouse Down",
+        .otherMouseUp: "Other Mouse Up",
+        .otherMouseDragged: "Other Mouse Dragged"
+    ]
+    
+    static let keyCodeMapping: [String: CGKeyCode] = [
+        "a": 0,
+        "s": 1,
+        "d": 2,
+        "f": 3,
+        "h": 4,
+        "g": 5,
+        "z": 6,
+        "x": 7,
+        "c": 8,
+        "v": 9,
+        "b": 11,
+        "q": 12,
+        "w": 13,
+        "e": 14,
+        "r": 15,
+        "y": 16,
+        "t": 17,
+        "1": 18,
+        "2": 19,
+        "3": 20,
+        "4": 21,
+        "6": 22,
+        "5": 23,
+        "=": 24,
+        "9": 25,
+        "7": 26,
+        "-": 27,
+        "8": 28,
+        "0": 29,
+        "]": 30,
+        "o": 31,
+        "u": 32,
+        "[": 33,
+        "i": 34,
+        "p": 35,
+        "l": 37,
+        "j": 38,
+        "'": 39,
+        "k": 40,
+        ";": 41,
+        "\\": 42,
+        ",": 43,
+        "/": 44,
+        "n": 45,
+        "m": 46,
+        ".": 47,
+        "`": 50,
+        "space": 49,
+        "enter": 36,
+        "tab": 48,
+        "delete": 51,
+        "escape": 53,
+        "command": 55,
+        "shift": 56,
+        "caps lock": 57,
+        "option": 58,
+        "ctrl": 59,
+        "right shift": 60,
+        "right option": 61,
+        "right control": 62,
+        "function": 63,
+        "f17": 64,
+        "volume up": 72,
+        "volume down": 73,
+        "mute": 74,
+        "f18": 79,
+        "f19": 80,
+        "f20": 90,
+        "f5": 96,
+        "f6": 97,
+        "f7": 98,
+        "f3": 99,
+        "f8": 100,
+        "f9": 101,
+        "f11": 103,
+        "f13": 105,
+        "f16": 106,
+        "f14": 107,
+        "f10": 109,
+        "f12": 111,
+        "f15": 113,
+        "help": 114,
+        "home": 115,
+        "page up": 116,
+        "forward delete": 117,
+        "f4": 118,
+        "end": 119,
+        "f2": 120,
+        "page down": 121,
+        "f1": 122,
+        "left arrow": 123,
+        "right arrow": 124,
+        "down arrow": 125,
+        "up arrow": 126,
+        "open launchpad": 131,
+        "increase screen brightness": 144,
+        "decrease screen brightness": 145,
+        "open mission control": 160,
+        "dictation": 176,
+        "spotlight search": 177,
+        "do not disturb mode": 178,
+        "global": 179
+    ]
+    
+    static let reversedKeyCodeMapping: [Int64: String] = [
+        0: "a",
+        1: "s",
+        2: "d",
+        3: "f",
+        4: "h",
+        5: "g",
+        6: "z",
+        7: "x",
+        8: "c",
+        9: "v",
+        11: "b",
+        12: "q",
+        13: "w",
+        14: "e",
+        15: "r",
+        16: "y",
+        17: "t",
+        18: "1",
+        19: "2",
+        20: "3",
+        21: "4",
+        22: "6",
+        23: "5",
+        24: "=",
+        25: "9",
+        26: "7",
+        27: "-",
+        28: "8",
+        29: "0",
+        30: "]",
+        31: "o",
+        32: "u",
+        33: "[",
+        34: "i",
+        35: "p",
+        37: "l",
+        38: "j",
+        39: "'",
+        40: "k",
+        41: ";",
+        42: "\\",
+        43: ",",
+        44: "/",
+        45: "n",
+        46: "m",
+        47: ".",
+        50: "`",
+        49: "space",
+        36: "return",
+        48: "tab",
+        51: "delete",
+        53: "escape",
+        54:"right command",
+        55: "command",
+        56: "shift",
+        57: "caps lock",
+        58: "option",
+        59: "control",
+        60: "right shift",
+        61: "right option",
+        62: "right control",
+        63: "function",
+        64: "f17",
+        72: "volume up",
+        73: "volume down",
+        74: "mute",
+        79: "f18",
+        80: "f19",
+        90: "f20",
+        96: "f5",
+        97: "f6",
+        98: "f7",
+        99: "f3",
+        100: "f8",
+        101: "f9",
+        103: "f11",
+        105: "f13",
+        106: "f16",
+        107: "f14",
+        109: "f10",
+        111: "f12",
+        113: "f15",
+        114: "help",
+        115: "home",
+        116: "page up",
+        117: "forward delete",
+        118: "f4",
+        119: "end",
+        120: "f2",
+        121: "page down",
+        122: "f1",
+        123: "left arrow",
+        124: "right arrow",
+        125: "down arrow",
+        126: "up arrow",
+        131: "Open launchpad",
+        144: "increase screen brightness",
+        145: "decrease screen brightness",
+        160: "open mission control",
+        176: "dictation",
+        177: "spotlight search",
+        178: "do not disturb mode",
+        179: "global"
+    ]
+    
+    
+
+}
+

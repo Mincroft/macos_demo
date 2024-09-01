@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>This app needs to control other applications to automate tasks.</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>We need access to capture your screen for the agent functionality.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>agent2.yuantsy.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSInputSourcesUsageDescription</key>
+	<string>This app needs to switch input sources to support multiple languages.</string>
+	<key>com.apple.security.temporary-exception.apple-events</key>
+	<string>com.apple.systemevents</string>
+</dict>
+</plist>
